@@ -157,7 +157,11 @@ class CookieJar implements Cookie_Backend {
 	) {
 		// if headers aren't sent, we can set the cookie
 		if(!headers_sent($file, $line)) {
-			return setcookie($name, $value, $expiry, $path, $domain, $secure, $httpOnly);
+
+			$reworkedPath = $path . "; samesite=None; secure;"; //Add the secure flag to support cookies iframes in CHROME 80+
+
+			return setcookie($name, $value, $expiry, $reworkedPath, $domain, $secure, $httpOnly);	
+		
 		} else if(Config::inst()->get('Cookie', 'report_errors')) {
 			throw new LogicException(
 				"Cookie '$name' can't be set. The site started outputting content at line $line in $file"
