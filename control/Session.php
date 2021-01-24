@@ -365,11 +365,15 @@ class Session {
 		$timeout = Config::inst()->get('Session', 'timeout');
 
 		if(!session_id() && !headers_sent()) {
+		
+
 			if($domain) {
-				session_set_cookie_params($timeout, $path, $domain, $secure, true);
+				session_set_cookie_params($timeout, $path .'/;SameSite=none', $domain, $secure, true);
 			} else {
-				session_set_cookie_params($timeout, $path, null, $secure, true);
+				session_set_cookie_params($timeout, $path .'/;SameSite=none', null, $secure, true);
 			}
+
+	
 
 			// Allow storing the session in a non standard location
 			if($session_path) session_save_path($session_path);
@@ -390,7 +394,7 @@ class Session {
 		// Modify the timeout behaviour so it's the *inactive* time before the session expires.
 		// By default it's the total session lifetime
 		if($timeout && !headers_sent()) {
-			Cookie::set(session_name(), session_id(), $timeout/86400, $path, $domain ? $domain
+			Cookie::set(session_name(), session_id(), $timeout/86400, $path .'/;SameSite=none', $domain ? $domain
 				: null, $secure, true);
 		}
 	}
